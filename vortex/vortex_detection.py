@@ -1,5 +1,5 @@
 import numpy as np
-from include import vortex
+import vortex.vortex as vortex
 import time
 
 
