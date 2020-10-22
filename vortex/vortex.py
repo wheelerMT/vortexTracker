@@ -36,52 +36,53 @@ class Vortex:
 
 class VortexMap:
     """Map that keeps track of all vortices within a condensate."""
+
     def __init__(self):
-        self.vortices = []
+        self.vortices_unid = []  # Unidentified vortices
+        self.vortices_sqv = []
+        self.vortices_hqv = []
 
     def add_vortex(self, vortex):
-        self.vortices.append(vortex)
+        # * If vortex type is identified, add it to appropriate list; otherwise add to unid list
+        if vortex.type is None:
+            self.vortices_unid.append(vortex)
+        elif vortex.type == 'SQV':
+            self.vortices_sqv.append(vortex)
+        elif vortex.type == 'HQV':
+            self.vortices_hqv.append(vortex)
+        else:
+            raise AttributeError('Vortex does not have a valid type.')
 
     def num_of_vortices(self):
-        return len(self.vortices)
+        print('There are {} SQVs and {} HQVs in the system.'.format(len(self.vortices_sqv), len(self.vortices_hqv)))
+        return len(self.vortices_sqv) + len(self.vortices_hqv)
 
-    def find_SQVs(self, threshold):
+    def identify_vortices(self, threshold):
         # * Finds SQVs by finding overlapping vortices in the components
         # * Threshold determines the maximum distance between to cores to be classed as a SQV
 
-        checked_list = []
-        for vortex1 in self.vortices:
-            for vortex2 in self.vortices:
-                if vortex1 == vortex2 or vortex1 in checked_list:
-                    continue
-                if abs(vortex1.x - vortex2.x) < threshold:
-                    if abs(vortex1.y - vortex2.y) < threshold:
-                        # * If this evaluates to true, the two vortices are too close together
-                        # * So remove vortex1 and update the type and uid of vortex2
+        vortices_plus = [vortex for vortex in self.vortices_unid if vortex.component == 'plus']
+        vortices_minus = [vortex for vortex in self.vortices_unid if vortex.component == 'minus']
 
-                        if vortex1 in self.vortices:
-                            self.vortices.remove(vortex1)
-                        vortex2.update_type('SQV')
-                        vortex2.update_uid()
-                        checked_list.append(vortex2)
+        for vortex_plus in vortices_plus:
+            for vortex_minus in vortices_minus:
+                if abs(vortex_plus.x - vortex_minus.x) < threshold:
+                    if abs(vortex_plus.y - vortex_minus.y) < threshold:
+                        # * If this evaluates to true, the two vortices are within the threshold
+                        # * So update the map with an SQV object taking an average position of both vortices
 
-    def find_HQVs(self):
-        # ! find_SQVs has to be called before this method to ensure accuracy!
+                        sqv = Vortex(((vortex_plus.x + vortex_minus.x) / 2,
+                                      (vortex_plus.y + vortex_minus.y) / 2), vortex_plus.winding, 'both')
+                        sqv.update_type('SQV')
+                        self.add_vortex(sqv)
+
+                        vortex_plus.update_type('SQV')
+                        vortex_minus.update_type('SQV')
+
         # * Determines HQVs by setting all remaining unidentified vortices to HQVs
-        for vortex in self.vortices:
+        for vortex in self.vortices_unid:
             if vortex.type is None:
                 vortex.update_type('HQV')
                 vortex.update_uid()
-
-    def compare_maps(self, tempMap, threshold):
-        # * Compares the master map with the temp map to determine which vortices to update
-
-        for masterVortex in self.vortices:
-            for tempVortex in tempMap.vortices:
-                if masterVortex.get_distance(tempVortex) < threshold:
-                    masterVortex.x, masterVortex.y = tempVortex.get_coords()
-
-        for remaining_vortex in tempMap.vortices:
-            # * Adds remaining vortices to master map
-            # ? Main use is for adding new HQVs into master map from splitting SQVs
-            self.add_vortex(remaining_vortex)
+                self.add_vortex(vortex)
+                self.vortices_unid.remove(vortex)
