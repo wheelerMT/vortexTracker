@@ -3,7 +3,7 @@ import vortex.vortex as vortex
 import time
 
 
-def vortex_detection_unwrapped(vortexMap, pos_x, pos_y, wfn, x_grid, y_grid, component):
+def detect(vortexMap, pos_x, pos_y, wfn, x_grid, y_grid, component):
     """A plaquette detection algorithm that finds areas of 2pi winding and then performs a least squares
     fit in order to obtain exact position of the vortex core."""
 
@@ -30,9 +30,9 @@ def vortex_detection_unwrapped(vortexMap, pos_x, pos_y, wfn, x_grid, y_grid, com
 
         # If sum of phase difference is 2pi or -2pi, create vortex object::
         if np.round(abs(phase_sum), 4) == np.round(2 * np.pi, 4):
-            if phase_sum > 0:  # Vortex
+            if phase_sum > 0:  # Anti-Vortex
                 vortexMap.add_vortex(vortex.Vortex(refine_positions([ii, jj], wfn, x_grid, y_grid), -1, component))
-            elif phase_sum < 0:  # Anti-vortex
+            elif phase_sum < 0:  # Vortex
                 vortexMap.add_vortex(vortex.Vortex(refine_positions([ii, jj], wfn, x_grid, y_grid), 1, component))
             counter += 1
 
