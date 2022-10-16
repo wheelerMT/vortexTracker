@@ -9,7 +9,7 @@ def vortex():
 
 class TestVortex:
     def test_instantiate_vortex(self, vortex):
-        assert vortex
+        assert vortex is not None
 
     def test_position(self, vortex):
         assert vortex.position() == (0., 0.)
