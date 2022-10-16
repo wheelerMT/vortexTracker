@@ -27,3 +27,25 @@ class Vortex:
     def distance_to(self, vortex) -> float:
         vortex_pos = vortex.position()
         return np.sqrt((self._pos[0] - vortex_pos[0]) ** 2 + (self._pos[1] - vortex_pos[1]) ** 2)
+
+    def closest_vortex(self, vortex_map):
+        pass
+
+
+class VortexMap:
+    """Map that contains all the vortices within the system."""
+
+    def __init__(self):
+        self.map = {}
+
+    def add_vortex(self, vortex) -> None:
+        """Adds a vortex to the map.
+        :param vortex: the vortex object.
+        """
+        self.map[vortex.id()] = vortex
+
+    def remove_vortex(self, vortex) -> None:
+        """Removes a vortex from the map.
+        :param vortex: The vortex object.
+        """
+        del self.map[vortex.id()]
