@@ -28,3 +28,7 @@ class TestVortex:
     def test_distance_to(self, vortex, vortex_positions, expected_result):
         other_vortex = Vortex(vortex_positions, 'sqv', 1)
         assert vortex.distance_to(other_vortex) == expected_result
+
+    def test_update_position(self, vortex):
+        vortex.update_position((1., -5.))
+        assert vortex.position() == (1., -5.)

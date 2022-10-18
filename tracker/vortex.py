@@ -15,10 +15,10 @@ class Vortex:
     def position(self) -> tuple[float, float]:
         return self._pos
 
-    def type(self):
+    def type(self) -> str:
         return self._type
 
-    def winding(self):
+    def winding(self) -> int:
         return self._winding
 
     def id(self) -> str:
@@ -30,6 +30,9 @@ class Vortex:
 
     def closest_vortex(self, vortex_map):
         pass
+
+    def update_position(self, pos: tuple[float, float]) -> None:
+        self._pos = pos
 
 
 class VortexMap:
