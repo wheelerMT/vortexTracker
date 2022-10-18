@@ -2,7 +2,7 @@ import numpy as np
 from tracker.vortex import Vortex, VortexMap
 
 
-def find_vortices(wavefunction: np.ndarray, vortex_map: VortexMap, x_array, y_array) -> None:
+def find_vortices(wavefunction: np.ndarray, vortex_map: VortexMap, x_array: np.ndarray, y_array: np.ndarray) -> None:
     phase_x = np.unwrap(np.angle(wavefunction), axis=0)
     phase_y = np.unwrap(np.angle(wavefunction), axis=1)
 
@@ -36,4 +36,3 @@ def _sum_plaquette(phase_x, phase_y, x_pos, y_pos):
     phase_sum += phase_y[x_pos, y_pos] - phase_y[x_pos + 1, y_pos]
 
     return phase_sum
-
